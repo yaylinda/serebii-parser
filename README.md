@@ -1,6 +1,11 @@
 # serebii-parser
 Python scripts to help parse Pokemon info from serebii.net
 
+### Development Environment
+```
+python 3.7
+```
+
 ### Usage
 Show options:
 ```
