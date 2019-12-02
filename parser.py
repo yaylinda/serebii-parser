@@ -1,3 +1,4 @@
+import argparse
 import csv
 import requests
 
@@ -5,6 +6,7 @@ import requests
 def get_html(url):
   """
   """
+  print('[get_html] retrieving pokedex html from "%s"' % url)
   r = requests.get(url)
   return r.text
 
@@ -70,13 +72,10 @@ def export_to_csv(data, pokemon_generation_keyword):
   print('[export_to_csv] done writing to csv!')
 
 
-def main():
+def main(pokedex_url, pokemon_generation_keyword):
   """
   """
-  pokedex_url = 'https://www.serebii.net/swordshield/galarpokedex.shtml'
   html = get_html(pokedex_url)
-
-  pokemon_generation_keyword = 'pokedex-swsh'
   data = parse_pokedex_html(html, pokemon_generation_keyword)
   export_to_csv(data, pokemon_generation_keyword)
 
@@ -84,4 +83,12 @@ def main():
 if __name__ == '__main__':
   """
   """
-  main()
+  pokedex_urls = {
+    'https://www.serebii.net/swordshield/galarpokedex.shtml' : 'pokedex-swsh'
+  }
+
+  parser = argparse.ArgumentParser(description='Script to parse HTML from serebii')
+  parser.add_argument('--pokedex_url', help='serebii url to parse', choices=pokedex_urls.keys())
+  args = parser.parse_args()
+
+  main(args.pokedex_url, pokedex_urls[args.pokedex_url])
