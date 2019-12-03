@@ -1,5 +1,6 @@
 import argparse
 import csv
+import json
 import requests
 
 
@@ -82,6 +83,8 @@ def parse_moves_from_url(pokemon_name, url):
   for line in lines:
     line = line.strip()
 
+    # TODO - abstract parsing keywords like "swsh", "bw"
+
     if '<td rowspan="2" class="fooinfo"><a href="/attackdex-swsh/' in line:
       if len(move.keys()) > 0:
         moves.append(move)
@@ -95,7 +98,7 @@ def parse_moves_from_url(pokemon_name, url):
     elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.png' in line:
       move['category'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.png')[0]
 
-    # parse other moves info, if needed
+    # TODO - parse other moves info, if needed
 
   print('[parse_moves_from_url] parsed %d moves for %s' % (len(moves), pokemon_name))
 
@@ -105,15 +108,22 @@ def parse_moves_from_url(pokemon_name, url):
 def export_to_csv(data, pokemon_generation_keyword):
   """
   """
-  file = open('data/%s.csv' % pokemon_generation_keyword, 'w')
-  writer = csv.DictWriter(file, fieldnames=['id','name','pokemon_url','types','abilities','image_src','stats','moves'])
-                                                      
-  writer.writeheader()
-  for row in data:
-    writer.writerow(row)
-  file.close()
+  with open('data/%s.csv' % pokemon_generation_keyword, 'w') as file:
+    writer = csv.DictWriter(file, fieldnames=['id','name','pokemon_url','types','abilities','image_src','stats','moves'])                                               
+    writer.writeheader()
+    for row in data:
+      writer.writerow(row)
 
-  print('[export_to_csv] done writing to csv!')
+  print('[export_to_csv] done writing to csv')
+
+
+def export_to_json(data, pokemon_generation_keyword):
+  """
+  """
+  with open('data/%s.json' % pokemon_generation_keyword, 'w') as file:
+    json.dump(data, file)
+
+  print('[export_to_json] done writing to json')
 
 
 def main(pokedex_url, pokemon_generation_keyword):
@@ -124,6 +134,7 @@ def main(pokedex_url, pokemon_generation_keyword):
   data = parse_moves(data)
 
   export_to_csv(data, pokemon_generation_keyword)
+  export_to_json(data, pokemon_generation_keyword)
 
 
 if __name__ == '__main__':
