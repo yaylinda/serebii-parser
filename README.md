@@ -16,3 +16,6 @@ Example:
 ```
 python parser.py --pokedex_url https://www.serebii.net/swordshield/galarpokedex.shtml
 ```
+
+### Caveat
+Currently only parses Pokemon data from Sword and Shield, with limited information on moves. 
