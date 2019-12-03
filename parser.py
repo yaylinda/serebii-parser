@@ -49,7 +49,12 @@ def parse_pokedex_html(html, pokemon_generation_keyword):
 
     elif '<td align="center" class="fooinfo"><a href="/%s/' % pokemon_generation_keyword in line:
       datum['types'] = []
-      datum['types'].append(line.split('href="/%s/' % pokemon_generation_keyword)[1].split('.shtml')[0])
+      if 'a> <a' in line:
+          sub_lines = line.split('a> <a')
+          for s in sub_lines:
+            datum['types'].append(s.split('href="/%s/' % pokemon_generation_keyword)[1].split('.shtml')[0])
+      else:
+        datum['types'].append(line.split('href="/%s/' % pokemon_generation_keyword)[1].split('.shtml')[0])
 
     elif '<td align="center" class="fooinfo">' in line and '</td>' in line:
       datum['stats'].append(line.split('<td align="center" class="fooinfo">')[1].split('</td>')[0])
@@ -90,7 +95,7 @@ def parse_moves_from_url(pokemon_name, url):
         moves.append(move)
         move = {}
 
-      move['name'] = line.split('.shtml">')[1].split('</a></td>')
+      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]
 
     elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.gif' in line:
       move['type'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.gif')[0]
