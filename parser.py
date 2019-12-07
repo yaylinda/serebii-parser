@@ -2,6 +2,7 @@ import argparse
 import csv
 import json
 import requests
+import time
 
 
 def get_html(url):
@@ -71,6 +72,7 @@ def parse_moves(original_data):
   for datum in original_data:
     datum['moves'] = parse_moves_from_url(datum['name'], datum['pokemon_url'])
     data.append(datum)
+    time.sleep(1)
 
   return data
 
