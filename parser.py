@@ -95,7 +95,9 @@ def parse_moves_from_url(pokemon_name, url):
         moves.append(move)
         move = {}
 
-      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]
+        potential_name = line.split('.shtml">')[1].split('</a></td>')[0]
+        if '<font size=\"1\"><i>(Details)</i>' not in potential_name:
+          move['name'] = potential_name
 
     elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.gif' in line:
       move['type'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.gif')[0]
