@@ -72,7 +72,7 @@ def parse_moves(original_data):
   for datum in original_data:
     datum['moves'] = parse_moves_from_url(datum['name'], datum['pokemon_url'])
     data.append(datum)
-    time.sleep(1)
+    time.sleep(0.1)
 
   return data
 
@@ -93,13 +93,11 @@ def parse_moves_from_url(pokemon_name, url):
     # TODO - abstract parsing keywords like "swsh", "bw"
 
     if '<td rowspan="2" class="fooinfo"><a href="/attackdex-swsh/' in line:
-      if len(move.keys()) > 0:
+      if len(move.keys()) == 3 and '<font size=\"1\"><i>(Details)</i>' not in move['name']:
         moves.append(move)
         move = {}
 
-        potential_name = line.split('.shtml">')[1].split('</a></td>')[0]
-        if '<font size=\"1\"><i>(Details)</i>' not in potential_name:
-          move['name'] = potential_name
+      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]
 
     elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.gif' in line:
       move['type'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.gif')[0]
