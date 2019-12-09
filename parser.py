@@ -93,7 +93,7 @@ def parse_moves_from_url(pokemon_name, url):
     # TODO - abstract parsing keywords like "swsh", "bw"
 
     if '<td rowspan="2" class="fooinfo"><a href="/attackdex-swsh/' in line:
-      if len(move.keys()) == 3 and '<font size=\"1\"><i>(Details)</i>' not in move['name']:
+      if len(move.keys()) == 3 and '<font size=\"1\"><i>(Details)</i>' not in move['name'] and move['name'] not in [m['name'] for m in moves]:
         moves.append(move)
         move = {}
 
