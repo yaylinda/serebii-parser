@@ -1,16 +1,8 @@
-import requests
 import time
+from common import get_html_lines
 from common import export_to_csv
 from common import export_to_json
-
-def get_html_lines(url):
-  """
-  """
-  r = requests.get(url)
-  html = r.text
-  lines = [x.strip() for x in html.splitlines()]
-  return lines
-
+from common import parse_moves
 
 def parse_pokedex_html(html_lines, pokemon_generation_keyword):
   """
@@ -56,35 +48,6 @@ def parse_moves_and_stats(original_data):
   return data
 
 
-def parse_moves(pokemon_name, lines):
-  """
-  """
-  moves = []
-  move = {}
-
-  for line in lines:
-    # TODO - abstract parsing keywords like "swsh", "bw"
-
-    if '<td rowspan="2" class="fooinfo"><a href="/attackdex-swsh/' in line:
-      if len(move.keys()) == 3 and '<font size=\"1\"><i>(Details)</i>' not in move['name'] and move['name'] not in [m['name'] for m in moves]:
-        moves.append(move)
-        move = {}
-
-      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]
-
-    elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.gif' in line:
-      move['type'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.gif')[0]
-
-    elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.png' in line:
-      move['category'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.png')[0]
-
-    # TODO - parse other moves info, if needed
-
-  print('[parse_moves_from_url] parsed %d moves for %s' % (len(moves), pokemon_name))
-
-  return moves
-
-
 def parse_stats(pokemon_name, lines):
   stats = []
 
@@ -105,28 +68,22 @@ def parse_stats(pokemon_name, lines):
       if len(stats) == expected_num_stats:
         break
 
-    print('[parse_stats] parsed %s as stats for %s' % (str(stats), pokemon_name))
+  print('[parse_stats] parsed %s as stats for %s' % (str(stats), pokemon_name))
 
   return stats
 
 
-
-def main(pokedex_url, pokemon_generation_keyword):
+def main(pokedex_url, pokemon_generation_keyword, game_version):
   """
   """
   html_lines = get_html_lines(pokedex_url)
   data = parse_pokedex_html(html_lines, pokemon_generation_keyword)
   data = parse_moves_and_stats(data)
 
-  export_to_csv(data, pokemon_generation_keyword)
-  export_to_json(data, pokemon_generation_keyword)
+  filename = 'pokedex-%s' % game_version
+  export_to_csv(data, filename)
+  export_to_json(data, filename)
 
 
 if __name__ == '__main__':
-  """
-  """
-  sinnoh_url = 'https://www.serebii.net/brilliantdiamondshiningpearl/sinnohpokedex.shtml'
-
-  pokemon_url_prefix = 'pokedex-swsh'
-
-  main(sinnoh_url, pokemon_url_prefix)
+  main('https://www.serebii.net/brilliantdiamondshiningpearl/sinnohpokedex.shtml', 'pokedex-swsh', 'bdsp')
