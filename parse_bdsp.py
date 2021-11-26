@@ -4,7 +4,7 @@ from common import export_to_csv
 from common import export_to_json
 from common import parse_moves
 
-def parse_pokedex_html(html_lines, pokemon_generation_keyword):
+def parse_pokedex_html(html_lines, pokemon_detail_page_url_prefix):
   """
   """
   data = []
@@ -12,7 +12,7 @@ def parse_pokedex_html(html_lines, pokemon_generation_keyword):
   print('[parse_pokedex_html] parsing %d lines of HTML' % len(html_lines))
 
   parsing_pokemon_link = False
-  parse_pokemon_link_prefix = '<a href="/%s/' % pokemon_generation_keyword
+  parse_pokemon_link_prefix = '<a href="/%s/' % pokemon_detail_page_url_prefix
 
   datum = {}
   datum['stats'] = []
@@ -33,15 +33,18 @@ def parse_pokedex_html(html_lines, pokemon_generation_keyword):
   return data
 
 
-def parse_moves_and_stats(original_data):
+def add_additional_data(original_data, pokemon_detail_page_url_prefix):
   """
   """
   data = []
 
   for datum in original_data:
     pokemon_page_html_lines = get_html_lines('https://www.serebii.net' + datum['pokemon_url'])
-    datum['moves'] = parse_moves(datum['name'], pokemon_page_html_lines)
-    datum['stats'] = parse_stats(datum['name'], pokemon_page_html_lines)
+    pokemon_name = datum['name']
+    datum['moves'] = parse_moves(pokemon_name, pokemon_page_html_lines)
+    datum['stats'] = parse_stats(pokemon_name, pokemon_page_html_lines)
+    datum['types'] = parse_types(pokemon_name, pokemon_page_html_lines)
+    datum['image_src'] = parse_image_src(pokemon_name, pokemon_page_html_lines)
     data.append(datum)
     time.sleep(0.1)
 
@@ -73,12 +76,58 @@ def parse_stats(pokemon_name, lines):
   return stats
 
 
-def main(pokedex_url, pokemon_generation_keyword, game_version):
+def parse_types(pokemon_name, lines):
+  types = []
+
+  is_parsing_types = False
+  start_parse_types_line_prefix = '<td class="tooltabcon">'
+  end_parse_types_prefix = '</td>'
+  type_line_prefix = 'href="/pokedex-sm/'
+  type_line_suffix = '.shtml'
+
+  for line in lines:
+    if not is_parsing_types and start_parse_types_line_prefix in line:
+      is_parsing_types = True
+
+    elif is_parsing_types and type_line_prefix in line and type_line_suffix in line:
+      if 'a> <a' in line:
+        sub_lines = line.split('a> <a')
+        for s in sub_lines:
+          types.append(s.split(type_line_prefix)[1].split(type_line_suffix)[0])
+      else:
+        types.append(line.split(type_line_prefix)[1].split(type_line_suffix)[0])
+
+    elif is_parsing_types and end_parse_types_prefix in line:
+      is_parsing_types = False
+
+  print('[parse_types] parsed %s as types for %s' % (str(types), pokemon_name))
+
+  return types
+
+
+def parse_image_src(pokemon_name, lines):
+  image_src = ''
+
+  line_prefix = '/swordshield/pokemon/'
+  line_suffix = '.png'
+
+  for line in lines:
+
+    if '<img src="/swordshield/pokemon/' in line and line_suffix in line:
+      image_src = line_prefix + line.split(line_prefix)[1].split(line_suffix)[0] + line_suffix
+      break
+  
+  print('[parse_image_src] parsed %s as img_src for %s' % (image_src, pokemon_name))
+  
+  return image_src
+
+
+def main(pokedex_url, pokemon_detail_page_url_prefix, game_version):
   """
   """
   html_lines = get_html_lines(pokedex_url)
-  data = parse_pokedex_html(html_lines, pokemon_generation_keyword)
-  data = parse_moves_and_stats(data)
+  data = parse_pokedex_html(html_lines, pokemon_detail_page_url_prefix)
+  data = add_additional_data(data, pokemon_detail_page_url_prefix)
 
   filename = 'pokedex-%s' % game_version
   export_to_csv(data, filename)
