@@ -6,16 +6,23 @@ Python scripts to help parse Pokemon info from serebii.net
 python 3.7
 ```
 
-### Usage
-Show options:
+### Instal Requirements
 ```
-python parser.py -h
-```
-
-Example:
-```
-python parser.py --pokedex_url https://www.serebii.net/swordshield/galarpokedex.shtml
+pip install -r requirements.txt
 ```
 
-### Caveat
-Currently only parses Pokemon data from Sword and Shield, with limited information on moves. 
+### Generate Pokedex Data
+
+#### Pokemon Sword and Shied
+```
+python parse_swsh.py
+```
+
+Check outputs in `data/pokedex-swsh.csv` and `data/pokedex-swsh.json`
+
+#### Pokemon Brilliant Diamond and Shining Pearl
+```
+python parse_bdsp.py
+```
+
+Check outputs in `data/pokedex-bdsp.csv` and `data/pokedex-bdsp.json`
