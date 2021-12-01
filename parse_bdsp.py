@@ -134,7 +134,7 @@ def main(pokedex_urls, pokemon_detail_page_url_prefix, game_version):
 
   filename = 'pokedex-%s' % game_version
   export_to_csv(all_data, filename)
-  export_to_json(data, filename)
+  export_to_json(all_data, filename)
 
 
 if __name__ == '__main__':
