@@ -122,17 +122,23 @@ def parse_image_src(pokemon_name, lines):
   return image_src
 
 
-def main(pokedex_url, pokemon_detail_page_url_prefix, game_version):
+def main(pokedex_urls, pokemon_detail_page_url_prefix, game_version):
   """
   """
-  html_lines = get_html_lines(pokedex_url)
-  data = parse_pokedex_html(html_lines, pokemon_detail_page_url_prefix)
-  data = add_additional_data(data, pokemon_detail_page_url_prefix)
+  all_data = []
+  for url in pokedex_urls:
+    html_lines = get_html_lines(url)
+    data = parse_pokedex_html(html_lines, pokemon_detail_page_url_prefix)
+    data = add_additional_data(data, pokemon_detail_page_url_prefix)
+    all_data = all_data + data
 
   filename = 'pokedex-%s' % game_version
-  export_to_csv(data, filename)
+  export_to_csv(all_data, filename)
   export_to_json(data, filename)
 
 
 if __name__ == '__main__':
-  main('https://www.serebii.net/brilliantdiamondshiningpearl/sinnohpokedex.shtml', 'pokedex-swsh', 'bdsp')
+  main([
+    'https://www.serebii.net/brilliantdiamondshiningpearl/sinnohpokedex.shtml',
+    'https://www.serebii.net/brilliantdiamondshiningpearl/otherpokemon.shtml'
+  ], 'pokedex-swsh', 'bdsp')

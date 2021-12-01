@@ -9,6 +9,7 @@ def get_html_lines(url):
   r = requests.get(url)
   html = r.text
   lines = [x.strip() for x in html.splitlines()]
+
   return lines
 
 
@@ -47,7 +48,9 @@ def parse_moves(pokemon_name, lines):
         moves.append(move)
         move = {}
 
-      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]
+      move['name'] = line.split('.shtml">')[1].split('</a></td>')[0]\
+        .replace('</a><br /><i>BDSP Only</i></td>', '')\
+        .replace('</a><br /><i>SWSH Only</i></td>', '')
 
     elif '<td class="cen"><img src="/pokedex-bw/type/' in line and '.gif' in line:
       move['type'] = line.split('<td class="cen"><img src="/pokedex-bw/type/')[1].split('.gif')[0]
