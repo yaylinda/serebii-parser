@@ -26,3 +26,10 @@ python parse_bdsp.py
 ```
 
 Check outputs in `data/pokedex-bdsp.csv` and `data/pokedex-bdsp.json`
+
+#### Pokemon Scarlet and Violet
+```
+python parse_sv.py
+```
+
+Check outputs in `data/pokedex-sv.csv` and `data/pokedex-sv.json`
