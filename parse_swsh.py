@@ -63,7 +63,7 @@ def add_moves_data(original_data):
 
   for datum in original_data:
     pokemon_page_html_lines = get_html_lines('https://www.serebii.net' + datum['pokemon_url'])
-    datum['moves'] = parse_moves(datum['name'], pokemon_page_html_lines)
+    datum['moves'] = parse_moves(datum['name'], pokemon_page_html_lines, 'swsh')
     data.append(datum)
     time.sleep(0.1)
 

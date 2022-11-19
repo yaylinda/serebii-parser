@@ -34,7 +34,7 @@ def export_to_json(data, filename):
   print('[export_to_json] done writing to json')
 
 
-def parse_moves(pokemon_name, lines):
+def parse_moves(pokemon_name, lines, attack_dex):
   """
   """
   moves = []
@@ -43,7 +43,7 @@ def parse_moves(pokemon_name, lines):
   for line in lines:
     # TODO - abstract parsing keywords like "swsh", "bw"
 
-    if '<td rowspan="2" class="fooinfo"><a href="/attackdex-swsh/' in line:
+    if ('<td rowspan="2" class="fooinfo"><a href="/attackdex-%s/' % attack_dex) in line:
       if len(move.keys()) == 3 and '<font size=\"1\"><i>(Details)</i>' not in move['name'] and move['name'] not in [m['name'] for m in moves]:
         moves.append(move)
         move = {}
